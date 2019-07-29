@@ -1,36 +1,171 @@
-<html>
-	<head>
-		<title>WadeGausden.com</title>
-		<link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet"> 
-		<style>
-			body
-			{
-				background-color:#D3D3D3;
-				font-family: arvo;
-				font-size:26px;
-			}
-			div {
-				width: 800px;
-				height: 100px;
-			
-				position: absolute;
-				top:0;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				text-align:center;
-			
-				margin: auto;
-			}
-			a
-			{
-				color:black;
-			}
-		</style>
-	</head>
-	<body>
-		<div>
-			me@wadegausden.com | <a href="https://nz.linkedin.com/in/wadegausden">LinkedIn</a>
-		</div>
-	</body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Orbit - Bootstrap 4 Resume/CV Template for Developers</title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Responsive HTML5 Resume/CV Template for Developers">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">    
+    <link rel="shortcut icon" href="favicon.ico">  
+    <!-- Google Font -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,400italic,300italic,300,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">   
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="assets/css/orbit-1.css">
+</head> 
+
+<body>
+    <div class="wrapper">
+        <div class="sidebar-wrapper">
+            <div class="profile-container">
+                <img class="profile" src="assets/images/profile.jpg" style="border-radius:90px;width:180px" alt="" />
+                <h1 class="name">Wade Gausden</h1>
+                <h3 class="tagline">Contract Software Engineer</h3>
+            </div><!--//profile-container-->
+            
+            <div class="contact-container container-block">
+                <ul class="list-unstyled contact-list">
+                    <li class="email"><i class="fas fa-envelope"></i><a href="mailto:me@wadegausden.com">me@wadegausden.com</a></li>
+                    <li class="website"><i class="fas fa-globe"></i><a href="https://dotnetcoretutorials.com" target="_blank">dotnetcoretutorials.com</a></li>
+                    <li class="linkedin"><i class="fab fa-linkedin-in"></i><a href="https://www.linkedin.com/in/wadegausden/" target="_blank">linkedin.com/me/</a></li>
+                </ul>
+            </div><!--//contact-container-->
+            <div class="education-container container-block">
+                <h2 class="container-block-title">Education</h2>
+                <div class="item">
+                    <h4 class="degree">Diploma In Distributed Software</h4>
+                    <div class="time">2010</div>
+                </div><!--//item-->
+                <div class="item">
+                    <h4 class="degree">Diploma In Systems Engineering</h4>
+                    <div class="time">2008</div>
+                </div><!--//item-->
+            </div><!--//education-container-->
+        </div><!--//sidebar-wrapper-->
+        
+        <div class="main-wrapper">
+            
+            <section class="section summary-section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-user"></i></span>About Me</h2>
+                <div class="summary">
+                    <p>I'm an experienced software engineer with extensive experience in Microsoft technologies and working in the cloud (AWS and Azure). While my background is rooted in C# MVC/WebAPI web development, I've never been one to turn down the challenge of learning a new technology in 24 hours so a project can go out. 
+					</p>
+						<p>
+						I'm someone that never stops learning, and I've been running a blog (<a target="_blank" href="https://dotnetcoretutorials.com">https://dotnetcoretutorials.com</a>) for several years, learning and then teaching about .NET Core. Writing has allowed me to work with developers as far flung as Nepal, and talk with developers from all walks of life.  </p>
+                </div><!--//summary-->
+            </section><!--//section-->
+            
+            <section class="section experiences-section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-briefcase"></i></span>Experiences</h2>
+                
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="job-title">Software Engineer</h3>
+                            <div class="time">March 2018 - August 2019</div>
+                        </div><!--//upper-row-->
+                        <div class="company">Timely, Dunedin New Zealand</div>
+                    </div><!--//meta-->
+                    <div class="details">
+						<p>Design, architect and build functionality and new product offerings for Timely's Saas product. </p>  
+						<p>Took the lead for C#/Web API development of the mobile backend API, architecting and building Timely's Zapier integration built in .NET Core/NodeJS, and BAU development utilizing Azure Cloud Technologies such as Blob Storage, Azure SQL, Cloud Services/AWA and VSTS.</p>
+                    </div><!--//details-->
+                </div><!--//item-->
+                
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="job-title">Technical Lead</h3>
+                            <div class="time">May 2017 - March 2018</div>
+                        </div><!--//upper-row-->
+                        <div class="company">Provoke Solutions, Auckland New Zealand</div>
+                    </div><!--//meta-->
+                    <div class="details">
+						<p>Technical lead on numerous projects for Provoke's bespoke development service offering.</p>
+						<p>Development on AI/Chatbot functionality for a large bank using Microsoft Bot Framework (C#), Azure LUIS NLP and Azure Cognitive services. Lead redevelopment of a major utilities provider self service portal built in .NET/C#.</p>  
+                        
+                    </div><!--//details-->
+                </div><!--//item-->
+                
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="job-title">Contract Software Developer</h3>
+                            <div class="time">June 2016 - May 2017</div>
+                        </div><!--//upper-row-->
+                        <div class="company">Various, Auckland New Zealand</div>
+                    </div><!--//meta-->
+                    <div class="details">
+						<p>Took on various 3 month contract roles predominately in C#/ASP.NET.</p>  
+						<p>Highlight included building a wholesale self service portal SPA for large utilities (Vector Power) in .NET/AngularJS.</p>
+                    </div><!--//details-->
+				</div><!--//item-->
+				
+				<div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="job-title">Team Lead</h3>
+                            <div class="time">June 2015 - June 2016</div>
+                        </div><!--//upper-row-->
+                        <div class="company">Unleashed Software, Auckland New Zealand</div>
+                    </div><!--//meta-->
+                    <div class="details">
+						<p>Lead a small team of 4 heading up the "Systems Team" working on Unleashed's Inventory Management SAAS product.</p>  
+						<p>The systems team lead infrastructure and core systems development before passing it on for other teams to use. In particular, Unleashed's use of various Azure technologies such as Azure Web Roles, Blob Storage, and Azure Service Bus.</p>
+                    </div><!--//details-->
+				</div><!--//item-->
+				
+				<div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="job-title">Senior Software Engineer</h3>
+                            <div class="time">October 2013 - June 2015</div>
+                        </div><!--//upper-row-->
+                        <div class="company">Findly, Auckland New Zealand</div>
+                    </div><!--//meta-->
+                    <div class="details">
+						<p>Worked as a senior software engineer on Findly's ATS/CRM enterprise product.</p>  
+						<p>Extensive use of "next-gen" technologies that would later become common place in NZ Tech companies. These included Elasticsearch, MongoDB, extensive use of AWS/Azure services and tooling such as Puppet, Team City/Jenkings and Octopus.</p>
+                    </div><!--//details-->
+				</div><!--//item-->
+				
+				<div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="job-title">Software Engineer</h3>
+                            <div class="time">March 2010 - October 2013</div>
+                        </div><!--//upper-row-->
+                        <div class="company">Various, Auckland New Zealand</div>
+                    </div><!--//meta-->
+                    <div class="details">
+						<p>Worked as a software engineer for various companies in Auckland including NZ's largest magazine publisher in Bauer Media.</p>  
+						<p>Predominately worked in C#/.NET MVC solutions, with drops of .NET WebForms, .NET desktop development and PHP. This is where I really cut my teeth on the Microsoft stack</p>
+                    </div><!--//details-->
+                </div><!--//item-->
+                
+            </section><!--//section-->
+            
+            <section class="section projects-section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-archive"></i></span>Download Resume</h2>
+                <div class="intro">
+                    <p>Things a little light for you? Feel free to download the PDF version of my resume <a target="_blank" href ="/assets/WadeGausdenCV.pdf">here</a>. Including a more extensive list of work history and technologies I've touched.</p>
+                </div><!--//intro-->
+            </section><!--//section-->
+        
+        </div><!--//main-body-->
+    </div>
+ 
+    <footer class="footer">
+        <div class="text-center">
+        </div><!--//container-->
+    </footer><!--//footer-->
+        
+</body>
+</html> 
+
