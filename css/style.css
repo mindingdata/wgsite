@@ -1,0 +1,529 @@
+/* ==========================================================================
+   Wade Gausden — site styles
+   Layered on top of Bootstrap: Bootstrap handles the grid, this handles
+   everything that makes it look like something.
+   ========================================================================== */
+
+/* --- Palette: warm paper + ink + one terracotta accent ------------------- */
+:root {
+  --bg:          #faf7f2;
+  --bg-deep:     #f2ece1;
+  --surface:     #fffefb;
+  --ink:         #17150f;
+  --ink-soft:    #4a453b;
+  --muted:       #7a7367;
+  --line:        #e4ddd0;
+  --line-firm:   #d3c9b7;
+  --accent:      #bf4d24;
+  --accent-soft: rgba(191, 77, 36, 0.09);
+  --on-accent:   #fffefb;
+  --shadow:      rgba(38, 30, 18, 0.07);
+  --shadow-lift: rgba(38, 30, 18, 0.13);
+
+  --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --prose: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #100f0d;
+    --bg-deep:     #191712;
+    --surface:     #1a1815;
+    --ink:         #f6f2e9;
+    --ink-soft:    #d1cabc;
+    --muted:       #918977;
+    --line:        #2a2722;
+    --line-firm:   #3d3831;
+    --accent:      #ea7b4d;
+    --accent-soft: rgba(234, 123, 77, 0.13);
+    --on-accent:   #14120f;
+    --shadow:      rgba(0, 0, 0, 0.4);
+    --shadow-lift: rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* --- Base ---------------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg);
+  /* soft warm glow up top, so the page isn't a flat slab */
+  background-image:
+    radial-gradient(70rem 40rem at 50% -18rem, var(--bg-deep) 0%, transparent 70%);
+  background-repeat: no-repeat;
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fine film-grain overlay — barely visible, kills the flat-CSS feel */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+body > * { position: relative; z-index: 1; }
+
+a { color: inherit; text-decoration: none; }
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --- Small tracked-out label (eyebrows, meta) ---------------------------- */
+.label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --- Width limits (used with Bootstrap's .container) --------------------- */
+.wrap       { max-width: 940px; }
+.wrap-tight { max-width: 780px; }
+
+/* --- Header -------------------------------------------------------------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 2.25rem 1rem;
+}
+
+.site-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+/* little terracotta dot as a mark */
+.site-name::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.site-name:hover { color: var(--accent); }
+
+/* --- Homepage hero ------------------------------------------------------- */
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: 3rem;
+}
+
+.hero-name {
+  margin: 0.75rem 0 0;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 20, "WONK" 1;
+  font-weight: 600;
+  font-size: clamp(2.9rem, 9vw, 5.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.hero-tagline {
+  max-width: 34rem;
+  margin: 1.4rem 0 0;
+  font-size: clamp(1rem, 2.4vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+/* thin rule that fades out — nicer than a flat <hr> */
+.rule {
+  height: 1px;
+  border: 0;
+  margin: 2.75rem 0;
+  opacity: 1;
+  background: linear-gradient(to right, var(--line-firm), var(--line) 45%, transparent);
+}
+
+/* --- Tiles (homepage) ---------------------------------------------------- */
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.5rem;
+  height: 100%;
+  min-height: 15.5rem;
+  padding: 1.75rem;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 1px 2px var(--shadow);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+}
+
+/* accent wash that blooms in on hover */
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(22rem 14rem at 85% 110%, var(--accent-soft), transparent 70%);
+  transition: opacity 0.35s ease;
+}
+
+.tile:hover,
+.tile:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--line-firm);
+  box-shadow: 0 14px 34px -8px var(--shadow-lift);
+}
+
+.tile:hover::after,
+.tile:focus-visible::after { opacity: 1; }
+
+.tile-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 18;
+  font-weight: 600;
+  font-size: clamp(1.9rem, 4.6vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  transition: color 0.2s ease;
+}
+
+.tile:hover .tile-title { color: var(--accent); }
+
+.tile-desc {
+  margin: 0.55rem 0 0;
+  font-size: 0.94rem;
+  color: var(--muted);
+}
+
+.tile-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* circular arrow button in the tile corner */
+.tile-arrow {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  border: 1px solid var(--line-firm);
+  border-radius: 50%;
+  transition: background-color 0.25s ease, color 0.25s ease,
+              border-color 0.25s ease,
+              transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tile:hover .tile-arrow {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.tile-resume:hover .tile-arrow    { transform: translateY(3px); }
+.tile-portfolio:hover .tile-arrow { transform: translate(3px, -3px); }
+
+/* --- Page heads (portfolio / post) --------------------------------------- */
+.page-title {
+  margin: 0.6rem 0 0;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 20, "WONK" 1;
+  font-weight: 600;
+  font-size: clamp(2.3rem, 7vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.page-intro {
+  max-width: 32rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+}
+
+/* --- Post list ----------------------------------------------------------- */
+.post-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  height: 100%;
+  min-height: 11rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px var(--shadow);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+}
+
+/* accent bar that wipes across the top edge on hover */
+.post-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.post-card:hover,
+.post-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--line-firm);
+  box-shadow: 0 12px 28px -8px var(--shadow-lift);
+}
+
+.post-card:hover::before,
+.post-card:focus-visible::before { transform: scaleX(1); }
+
+.post-num {
+  font-family: var(--prose);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.post-card-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+  transition: color 0.2s ease;
+}
+
+.post-card:hover .post-card-title { color: var(--accent); }
+
+.post-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.2s ease, gap 0.25s ease;
+}
+
+.post-card:hover .post-card-foot {
+  gap: 0.75rem;
+  color: var(--accent);
+}
+
+/* --- Post body ----------------------------------------------------------- */
+.post { max-width: 40rem; }
+
+.post-title {
+  margin: 0.6rem 0 0;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 20, "WONK" 1;
+  font-weight: 600;
+  font-size: clamp(2.1rem, 6.5vw, 3.1rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.post-body {
+  margin-top: 2.25rem;
+  font-family: var(--prose);
+  font-size: 1.2rem;
+  line-height: 1.72;
+  color: var(--ink-soft);
+}
+
+.post-body > p { margin: 0 0 1.4em; }
+
+/* first paragraph reads a touch larger, like a lede — same colour as the rest */
+.post-body > p:first-of-type {
+  font-size: 1.3rem;
+  line-height: 1.6;
+}
+
+.post-body h2 {
+  margin: 2.5rem 0 0.9rem;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.post-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.post-body a:hover { text-decoration-thickness: 2px; }
+
+.post-body blockquote {
+  margin: 2rem 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--accent);
+  font-style: italic;
+  color: var(--ink);
+}
+
+.post-body code {
+  padding: 0.15em 0.4em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  color: var(--ink);
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+/* --- Diagrams (mermaid) -------------------------------------------------- */
+.figure {
+  margin: 2.5rem 0;
+}
+
+.diagram {
+  padding: 1.5rem 1rem;
+  overflow-x: auto;           /* wide diagrams scroll rather than squash */
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.diagram .mermaid {
+  display: flex;
+  justify-content: center;
+  min-width: min-content;
+}
+
+.diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.figure-caption {
+  margin: 0.85rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: center;
+}
+
+.figure-caption strong {
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+/* --- Bottom nav / footer ------------------------------------------------- */
+.post-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.nav-link-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+  transition: color 0.2s ease, gap 0.25s ease;
+}
+
+.nav-link-quiet:hover {
+  gap: 0.75rem;
+  color: var(--accent);
+}
+
+.site-footer {
+  padding-block: 3rem 2.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* --- Entrance animation (staggered, and respectful of settings) ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.rise { animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+.rise-1 { animation-delay: 0.04s; }
+.rise-2 { animation-delay: 0.12s; }
+.rise-3 { animation-delay: 0.2s; }
+.rise-4 { animation-delay: 0.28s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .tile:hover,
+  .post-card:hover { transform: none; }
+}

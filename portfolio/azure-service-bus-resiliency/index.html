@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building Resiliency in Azure Service Bus — Wade Gausden</title>
+  <meta name="description" content="Azure Service Bus has no native exponential backoff. Here's what that actually costs you.">
+  <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#100f0d" media="(prefers-color-scheme: dark)">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23bf4d24'/%3E%3Ctext x='50' y='73' font-size='62' font-family='Georgia,serif' fill='%23faf7f2' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <header class="container wrap-tight site-header">
+    <a class="site-name" href="/">Wade Gausden</a>
+    <a class="nav-link-quiet" href="/portfolio/"><span aria-hidden="true">&larr;</span> Portfolio</a>
+  </header>
+
+  <main class="container wrap-tight pb-5">
+    <article class="post rise rise-1">
+
+      <span class="label">Post 01</span>
+      <h1 class="post-title">Building Resiliency in Azure Service Bus</h1>
+
+      <div class="post-body">
+        <!-- ===== Post body starts here ===== -->
+
+        <p>
+          It&rsquo;s no secret I&rsquo;ve been a big fan of Azure for some time, but it&rsquo;s
+          also no secret that at times, I can get frustrated with Azure products missing some,
+          how do I say it, &ldquo;core&rdquo; features that should really be out of the box.
+        </p>
+
+        <p>
+          One such feature is that Azure Service Bus does not natively have exponential
+          backoffs with a retry.
+        </p>
+
+        <p>
+          If that sounds confusing to you, imagine the following.
+        </p>
+
+        <figure class="figure">
+          <div class="diagram">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant Q as Queue
+    participant C as Consumer
+    participant API as Downstream API
+
+    Q->>C: Deliver message
+    C->>API: Call
+    API--xC: 503 — it's down
+    C--xQ: Fail / abandon
+
+    Note over Q,C: wait 2s
+
+    Q->>C: Retry 1
+    C->>API: Call
+    API--xC: 503 — still down
+    C--xQ: Fail / abandon
+
+    Note over Q,C: wait 4s
+
+    Q->>C: Retry 2
+    C->>API: Call
+    API-->>C: 200 — recovered
+    C->>Q: Complete
+            </pre>
+          </div>
+          <figcaption class="figure-caption">
+            <strong>How a backoff normally works.</strong>
+            Each time a consumer of a message fails, the service bus will wait a period, then retry. If it fails again, it will wait even longer before retrying.
+          </figcaption>
+        </figure>
+
+        <p>
+          This retry behaviour is what I, and frankly anyone who has used a service bus,
+          would expect. But here&rsquo;s how Azure Service Bus handles things.
+        </p>
+
+        <figure class="figure">
+          <div class="diagram">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant Q as Service Bus Queue
+    participant C as Consumer
+    participant API as Downstream API
+    participant DLQ as Dead-letter Queue
+
+    Q->>C: Deliver (DeliveryCount 1)
+    C->>API: Call
+    API--xC: 503
+    C--xQ: Abandon
+
+    Note over Q,C: no delay — redelivered immediately
+
+    Q->>C: Deliver (DeliveryCount 2)
+    C->>API: Call
+    API--xC: 503
+    C--xQ: Abandon
+
+    Note over Q,C: ...and again, and again
+
+    Q->>C: Deliver (DeliveryCount 10)
+    C->>API: Call
+    API--xC: 503
+    C--xQ: Abandon
+    Q->>DLQ: MaxDeliveryCount exceeded
+
+    Note over Q,DLQ: total elapsed: under a second<br/>the API comes back 30s later
+            </pre>
+          </div>
+          <figcaption class="figure-caption">
+            <strong>How Azure Service Bus does it.</strong>
+            Azure Service Bus does retry messages, but it does so <em>immediately</em> with no
+            backoff at all, let alone an exponential backoff.
+          </figcaption>
+        </figure>
+
+        <p>
+          Oof. No retries built in? Seems strange. But of course, there is always the
+          GitHub Issues graveyard to confirm not only that this feature doesn&rsquo;t exist,
+          but that Microsoft has no intention of building it.
+          <a href="https://github.com/Azure/azure-webjobs-sdk/issues/2955">Here&rsquo;s the
+          GitHub issue from 2023</a>.
+        </p>
+
+        <p>
+          When architecting &ldquo;around&rdquo; the issue, I explored all options. First, can
+          we use a different Azure product? Well, we have&hellip;
+        </p>
+
+        <p>
+          Azure Event Grid <em>does</em> have an exponential
+          backoff mechanism
+          <a href="https://learn.microsoft.com/en-us/azure/event-grid/delivery-and-retry">(documentation here)</a>.
+          But Event Grid has a couple of drawbacks. Mainly, it changes the consumer side of the
+          messaging to a &ldquo;push&rdquo; rather than a &ldquo;pull&rdquo;. This can cause
+          havoc if you have locked-down firewalls because you now need to let through an awful
+          lot of Microsoft IPs that may or may not be your actual Event Grid instance.
+        </p>
+
+        <p>
+          The other more pressing issue with Event Grid, at least for the organisation I was
+          with at the time, is that Event Grid&rsquo;s messages sitting in the queue are
+          &ldquo;opaque&rdquo;. You cannot &ldquo;peek&rdquo; messages in Event Grid. So while
+          you may know that there are messages sitting there waiting to be reprocessed, you
+          cannot see the contents of these messages. Basically take that observability and throw
+          it out the window. While you&rsquo;re at it, throw out Event Grid because it&rsquo;s
+          not going to work for us here!
+        </p>
+
+        <p>
+          Other Azure queuing systems such as Storage Queues simply didn&rsquo;t have the
+          functionality we required. We go from &ldquo;pub/sub&rdquo; back to point-to-point
+          messaging. Not acceptable. Out the window it goes.
+        </p>
+
+        <p>
+          How about switching to AWS? It&rsquo;s an option, right? Or at least should always be
+          considered. This was one that I had the biggest headache with. EventBridge from Amazon
+          <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html">(documentation here)</a>
+          seemed to fulfil all our needs, including an inbuilt exponential backoff. But, we were
+          a Microsoft shop. Ultimately, looking at the total cost of ownership, standing up a
+          full AWS environment, with all the security and platform boilerplate around that, was
+          simply not an option for us.
+        </p>
+      </div>
+
+      <nav class="post-nav">
+        <a class="nav-link-quiet" href="/portfolio/"><span aria-hidden="true">&larr;</span> All posts</a>
+        <a class="nav-link-quiet" href="/portfolio/hello-world/">Hello World <span aria-hidden="true">&rarr;</span></a>
+      </nav>
+
+    </article>
+  </main>
+
+  <!-- Mermaid: renders any <pre class="mermaid"> above, themed to match the site -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+    const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const palette = dark
+      ? { ink: '#f6f2e9', soft: '#d1cabc', muted: '#918977', line: '#3d3831',
+          surface: '#1a1815', raised: '#232019', accent: '#ea7b4d' }
+      : { ink: '#17150f', soft: '#4a453b', muted: '#7a7367', line: '#d3c9b7',
+          surface: '#fffefb', raised: '#f2ece1', accent: '#bf4d24' };
+
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      sequence: { actorMargin: 55, noteMargin: 12, messageAlign: 'center', useMaxWidth: true },
+      themeVariables: {
+        background: palette.surface,
+        primaryColor: palette.raised,
+        primaryTextColor: palette.ink,
+        primaryBorderColor: palette.line,
+        lineColor: palette.muted,
+        textColor: palette.soft,
+        actorBkg: palette.raised,
+        actorBorder: palette.line,
+        actorTextColor: palette.ink,
+        actorLineColor: palette.line,
+        signalColor: palette.soft,
+        signalTextColor: palette.soft,
+        noteBkgColor: palette.accent,
+        noteTextColor: '#fffefb',
+        noteBorderColor: palette.accent,
+        sequenceNumberColor: '#fffefb',
+        labelBoxBkgColor: palette.raised,
+        labelBoxBorderColor: palette.line,
+        labelTextColor: palette.ink
+      }
+    });
+  </script>
+
+</body>
+</html>
